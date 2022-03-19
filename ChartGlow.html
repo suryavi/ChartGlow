@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChartJs Linear chart Glow point</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <style>
+    body{
+      background-color: black;
+    }
+    td{
+      border: 1px solid gray;
+    }
+  </style>
+</head>
+<body>
+  <table style="table-layout: fixed; border: 1px solid white;">
+    <tbody>
+        <td>
+          <p style="margin: 0;text-align:center;font-family: 'Courier New', Courier, monospace;color: crimson;">Line Chart 1</p>
+          <div style="height: 200px;width:400px;">
+            <canvas id="lineChartBlueGreen"></canvas>
+          </div>
+        </td>
+        <td>
+          <p style="margin: 0;text-align:center;font-family: 'Courier New', Courier, monospace;color: crimson;">Line Chart 2</p>
+          <div style="height: 200px;width:400px;">
+            <canvas id="lineChartBlueGreen1"></canvas>
+          </div>
+        </td>
+        <td>
+          <p style="margin: 0;text-align:center;font-family: 'Courier New', Courier, monospace;color: crimson;">Line Chart 3</p>
+          <div style="height: 200px;width:400px;">
+            <canvas id="lineChartBlueGreen2"></canvas>
+          </div>  
+        </td>
+      </tbody>
+  </table>
+
+  <script>
+// Dummy data ---------------------------------------------------------------------------------------------
+    var results4 = [
+  {
+    date: "Jan 17",
+    visits: 70
+  },
+  {
+    date: "Feb 17",
+    visits: 50
+  },
+  {
+    date: "Mar 17",
+    visits: 32
+  },
+  {
+    date: "Apr 17",
+    visits: 45
+  },
+  {
+    date: "May 17",
+    visits: 12
+  },
+  {
+    date: "June 17",
+    visits: 23
+  },
+  {
+    date: "July 17",
+    visits: 54
+  },
+  {
+    date: "Aug 17",
+    visits: 2
+  }
+];
+
+var results3 = [
+{
+    date: "Jan",
+    visits: 150000736
+  },
+  {
+    date: "Feb",
+    visits: 189233
+  },
+  {
+    date: "Mar",
+    visits: 3878978 
+  },
+  {
+    date: "Apr",
+    visits: 238912323
+  },
+  {
+    date: "May",
+    visits: 3
+  },
+  {
+    date: "June",
+    visits: 8779898
+  },
+  {
+    date: "July",
+    visits: 1232131
+  },
+  {
+    date: "Aug",
+    visits: 21321312
+  }
+];
+
+var results2 = [
+{
+    date: 1,
+    visits: 340
+  },
+  {
+    date: 4,
+    visits: 450
+  },
+  {
+    date: 5,
+    visits: 865
+  },
+  {
+    date: 7,
+    visits: 780
+  },
+  {
+    date: 8,
+    visits: 100
+  },
+  {
+    date: 8,
+    visits: 214
+  },
+  {
+    date: 8,
+    visits: 230
+  },
+  {
+    date: 9,
+    visits: 980
+  },
+  {
+    data: 10,
+    visits: 5876
+  },
+  {
+    data: 12,
+    visits: 856
+  }
+]
+
+var results1 = [
+{
+    date: 1,
+    visits: 10
+  },
+  {
+    date: 4,
+    visits: 7
+  },
+  {
+    date: 5,
+    visits: 2
+  },
+  {
+    date: 7,
+    visits: 40
+  },
+  {
+    date: 8,
+    visits: 100
+  },
+  {
+    date: 8,
+    visits: 4
+  },
+  {
+    date: 8,
+    visits: 1
+  },
+  {
+    date: 9,
+    visits: 3
+  },
+  {
+    data: 9,
+    visits: 134
+  }
+];
+
+//Dummy Data -----------------------------------------------------------------------------
+
+// Draw Line Chart
+ function drawLineChart(div_id, results, yColumn, yLabel, xAxes, firstColour, secondColour, thirdColour) {
+   var ctx = document.getElementById(div_id).getContext("2d");
+   var gradientStroke = ctx.createLinearGradient(20, 1, 220, 0);
+   gradientStroke.addColorStop(0, firstColour);
+   gradientStroke.addColorStop(0.6, secondColour);
+   gradientStroke.addColorStop(0.9, thirdColour);
+ 
+// X axis and Y axis 
+  var labels = results.map(function(item) {
+      return item[xAxes];
+      });
+
+  var data = results.map(function(item) {
+        return item[yColumn];
+      });
+
+  //globally  assign 
+  Chart.defaults.global.legend.display = false;
+  Chart.defaults.global.defaultFontFamily = "'PT Sans', sans-serif";
+  Chart.defaults.global.elements.line.capBezierPoints = true;
+  
+// axis clipping
+  const WIDE_CLIP = {top: 1, bottom: 5, right: 10, left: 1};
+
+//ClipArea .. Chart CutOff purpose.
+  Chart.canvasHelpers.clipArea = function(ctx, clipArea) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(
+        clipArea.left - WIDE_CLIP.left + WIDE_CLIP.right,
+        clipArea.top - WIDE_CLIP.top,
+        clipArea.right - clipArea.left,
+        clipArea.bottom - clipArea.top + WIDE_CLIP.bottom
+      );
+      ctx.clip();
+  };
+
+// Glow Effect 
+  // let draw = Chart.controllers.line.prototype.draw;
+  // Chart.controllers.line.prototype.draw = function() {
+  //   let _stroke = ctx.stroke;
+  //   ctx.stroke = function() {
+  //     ctx.save();
+  //     ctx.shadowColor = 'rgba(3, 252, 240, 1)';
+  //     ctx.shadowBlur = 30;
+  //     ctx.shadowOffsetX = 0;
+  //     ctx.shadowOffsetY = 0;
+  //     _stroke.apply(this, arguments);
+  //     ctx.restore();
+  //   };
+  //   draw.apply(this, arguments);
+  //   ctx.stroke = _stroke;
+  // };
+
+//options to modify the datasets
+
+ options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+       padding: {
+         left: 25,
+         top: 25,
+         bottom: 25,
+         right: 25,
+       }
+    },
+    tooltips: {
+      enabled: false,
+      intersect: false,
+    },
+      scales: {
+         yAxes: [{
+           ticks:{
+             display: true,
+           },
+           gridLines: {
+                display:true
+            }
+         }],
+         xAxes: [
+           {
+             ticks:{
+               display: false,
+             },
+             gridLines: {
+                display:true
+            }
+           }
+         ]
+          },
+     };
+
+// Glow effect
+  var glow = new Image(85,55);
+ if(div_id === 'lineChartBlueGreen'){
+    glow.src = 'Glow/Glow-1.png';
+ } else {
+  if(div_id === 'lineChartBlueGreen1') {
+    glow.src = 'Glow/Glow-2.png';
+  } else {
+    if(div_id === 'lineChartBlueGreen2') {
+      glow.src = 'Glow/Glow-3.png';
+    }
+  }
+ }
+
+// PointRadius End Point  
+  var pointRadius = [];
+  var pointStyle = [];
+  for(let i = 0; i < data.length; i++){
+      if(i === data.length - 1){
+        pointRadius[i] = 15;
+        pointStyle[i] = glow; 
+      } else {
+        pointRadius[i] = null;
+        pointStyle[i] = 0;
+      }
+  }
+ 
+// config Data  
+  data = {
+      labels: labels,
+      datasets: [
+        {
+          label: yLabel,
+            data: data,
+            showLine: true,
+            fill: false,
+            backgroundColor: gradientStroke,
+            radius: pointRadius,
+            pointStyle: pointStyle,
+            borderColor: gradientStroke,
+            borderCapStyle: 'round'
+        },
+      ]
+    };
+
+// Create chart   
+  var myChart = new Chart(ctx, {
+          type: "line",
+          data: data,
+          options: options
+          });
+        }
+// Load the chart
+ window.onload = () => {
+      drawCharts('lineChartBlueGreen');
+      drawCharts1('lineChartBlueGreen1');
+      drawCharts2('lineChartBlueGreen2');
+  }
+
+// function to create gradient color and chart 
+  function drawCharts(div) {
+    drawLineChart(
+       div,
+      results1,
+      "visits",
+      "Number of visits",
+      "date",
+      "rgba(185, 217, 100, 0.47)",
+      "#63c175",
+      "rgba(154, 187, 255, 0.47)",
+    );
+  }
+
+  function drawCharts1(div) {
+    drawLineChart(
+       div,
+      results2,
+      "visits",
+      "Number of visits",
+      "date",
+      "rgba(127,255,0,0.56)",
+      "#63c175",
+      "rgba(124,252,0,0.47)",
+    );
+  }
+
+  function drawCharts2(div) {
+    drawLineChart(
+       div,
+      results3,
+      "visits",
+      "Number of visits",
+      "date",
+      "rgba(255,140,0,0.24)",
+      "#63c175",
+      "rgba(255,215,0,0.47)",
+    );
+  }
+  </script>
+</body>
+</html>
